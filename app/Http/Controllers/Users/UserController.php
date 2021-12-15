@@ -36,7 +36,7 @@ class UserController extends Controller
         $email = $request->input('email');
         $password = $request->input('password');
   
-        $user = User::where('email', $email)->first();
+        $user = User::select('name', 'email', 'password')->where('email', $email)->first();
         if (!$user) {
             return response()->json(['message' => 'Login failed'], 401);
         }
@@ -52,8 +52,9 @@ class UserController extends Controller
         // $generateToken = $this->jwt($user);
   
         return response()->json([
-            'success' => true,
-            'token'    => $generateToken
+            'success'   => true,
+            'data'      => $user,
+            'token'     => $generateToken
         ], 200);
     }
 }

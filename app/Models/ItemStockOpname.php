@@ -20,4 +20,9 @@ class ItemStockOpname extends Model
 		'desc',
 		'post_by',
     ];
+
+    public function users()
+    {
+      return $this->hasOne(User::class,'id','post_by'); 
+    }
 }

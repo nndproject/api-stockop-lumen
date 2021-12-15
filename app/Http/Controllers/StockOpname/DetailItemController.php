@@ -8,7 +8,7 @@ use Illuminate\Http\Request;
 use Carbon\Carbon;
 use App\Models\ItemStockOpname;
 use Illuminate\Support\Facades\DB;
-
+use Auth;
 class DetailItemController extends Controller
 {
     public function __construct()
@@ -41,7 +41,7 @@ class DetailItemController extends Controller
                 'success' => true,
                 'message' =>'Tidak Ada Data Stock Opname di bulan ini',
                 'data'    => $data
-            ], 204);
+            ], 404);
         }
     }
 
@@ -69,35 +69,47 @@ class DetailItemController extends Controller
                 'success' => true,
                 'message' =>'Tidak Ada item ini',
                 'data'    => $data
-            ], 204);
+            ], 404);
         }
     }
 
     public function updatestockitem(Request $request)
     {
+        /* ItemStockOpname::where([['periode', $request->input('periode')],['year', $request->input('year')],['itemno', $request->input('itemno')]])->update([
+            'stockop'    => $request->input('qty_real'),
+            'desc'       => $request->input('desc'),
+            'post_by'    => Auth::user()->id,
+            'updated_at' => Carbon::now()
+        ]);
+        return response()->json([
+            'success' => true,
+            'message' =>'Berhasil memperbarui data item ini',
+        ], 202); */
+
         $this->validate($request, [
             'itemno' => 'min:1|required',
             'periode','year','qty_real'=>'required',
         ]);
 
-        $data=ItemStockOpname::where([['periode',$request->periode],['year',$request->year],['itemno',$request->itemno]])->update([
+        $data=ItemStockOpname::where([['periode', $request->periode],['year', $request->year],['itemno', $request->itemno]])->update([
             'stockop'    => $request->qty_real,
             'desc'       => $request->desc,
-            // 'post_by'    => Auth::user()->id,
+            'post_by'    => Auth::user()->id,
             'updated_at' => Carbon::now()
         ]);
+
+        
         if($data){
             return response()->json([
                 'success' => true,
                 'message' =>'Berhasil memperbarui data item ini',
-            ], 200);
+            ], 202);
         }else{
             return response()->json([
-                'success' => true,
+                'success' => false,
                 'message' =>'Gagal memperbarui data ini',
-            ], 204);
+            ], 404);
         }
     }
-
 
 }

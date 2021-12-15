@@ -24,9 +24,13 @@ $router->group(['prefix' => 'api'], function () use ($router) {
 
 
     $router->group(['prefix' => 'stock-opname'], function () use ($router) {
-        $router->get('/',  '\App\Http\Controllers\StockOpname\StockOpnameController@index');
-        $router->get('list-item/{bulan}/{tahun}',  '\App\Http\Controllers\StockOpname\DetailItemController@listitem');
-        $router->get('detail-item/{bulan}/{tahun}/{itemno}',  '\App\Http\Controllers\StockOpname\DetailItemController@detailitem');
+        $router->get('/', '\App\Http\Controllers\StockOpname\StockOpnameController@index');
+        $router->get('monitoring/{id}', '\App\Http\Controllers\StockOpname\StockOpnameController@monitoring');
+
+        $router->get('list-item/{bulan}/{tahun}', '\App\Http\Controllers\StockOpname\DetailItemController@listitem');
+        $router->get('detail-item/{bulan}/{tahun}/{itemno}', '\App\Http\Controllers\StockOpname\DetailItemController@detailitem');
+        $router->post('item/update', '\App\Http\Controllers\StockOpname\DetailItemController@updatestockitem');
+
     });
 
 
