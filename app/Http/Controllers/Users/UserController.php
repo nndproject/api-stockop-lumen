@@ -50,11 +50,12 @@ class UserController extends Controller
         User::where('email', $email)->update(['remember_token' => $generateToken]);
 
         // $generateToken = $this->jwt($user);
-  
-        return response()->json([
+        $user['token'] = $generateToken;
+        return response()->json($user, 200);
+       /*  return response()->json([
             'success'   => true,
-            'data'      => $user,
-            'token'     => $generateToken
-        ], 200);
+            'data'      => $user
+            // 'token'     => $generateToken
+        ], 200); */
     }
 }
