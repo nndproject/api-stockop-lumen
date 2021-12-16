@@ -14,7 +14,7 @@ class StockOpnameController extends Controller
 {
     public function __construct()
     {
-        $this->middleware('auth');
+        // $this->middleware('auth');
     }
     
     public function index()
@@ -128,5 +128,30 @@ class StockOpnameController extends Controller
                 'message' =>'Tidak Ada Data Data Monitoring Stock Opname',
             ], 404);
         }
+    }
+    
+    public function timeline($id)
+    {
+        $data = StockOpname::findOrFail($id);
+        $dataTimeline = ItemStockOpname::with('users:id,name')->where([['periode',$data->periode],['year',$data->year],['stockop','!=', null]])->orderBy('updated_at','DESC')->limit(20)->get();
+
+        $result = array();
+        foreach ($dataTimeline as $item) {
+            $tmp=array();
+            $tmp['itemno']          = $item->itemno;
+            $tmp['itemdesc']        = $item->itemdesc;
+            $tmp['location']        = $item->warehouse;
+            $tmp['status']          = ($item->qty == $item->stockop) ? true : false;
+            $tmp['message']         = "Data Item ".$item->itemno." - ".$item->itemdesc." telah berhasil diperbarui oleh ".$item->users->name;
+            $tmp['updated_at']      = Carbon::parse($item->updated_at)->diffForHumans(); 
+
+            array_push($result, $tmp);
+        }
+
+        return response()->json([
+            'success' => true,
+            'message' =>'Data Timeline Stock Opname',
+            'data'    => $result
+        ],200);
     }
 }

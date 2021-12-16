@@ -14,7 +14,8 @@
 */
 
 $router->get('/', function () use ($router) {
-    return $router->app->version();
+    // return $router->app->version();
+    return view('welcome');
 });
 
 
@@ -26,6 +27,7 @@ $router->group(['prefix' => 'api'], function () use ($router) {
     $router->group(['prefix' => 'stock-opname'], function () use ($router) {
         $router->get('/', '\App\Http\Controllers\StockOpname\StockOpnameController@index');
         $router->get('monitoring/{id}', '\App\Http\Controllers\StockOpname\StockOpnameController@monitoring');
+        $router->get('timeline/{id}', '\App\Http\Controllers\StockOpname\StockOpnameController@timeline');
 
         $router->get('list-item/{bulan}/{tahun}', '\App\Http\Controllers\StockOpname\DetailItemController@listitem');
         $router->get('detail-item/{bulan}/{tahun}/{itemno}', '\App\Http\Controllers\StockOpname\DetailItemController@detailitem');

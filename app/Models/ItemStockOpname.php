@@ -25,4 +25,10 @@ class ItemStockOpname extends Model
     {
       return $this->hasOne(User::class,'id','post_by'); 
     }
+
+    public function toArray()
+    {
+        $attributes = $this->attributesToArray();
+        return array_merge($attributes, $this->relationsToArray());
+    }
 }
