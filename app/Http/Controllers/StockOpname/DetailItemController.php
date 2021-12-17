@@ -13,7 +13,7 @@ class DetailItemController extends Controller
 {
     public function __construct()
     {
-        $this->middleware('auth');
+        // $this->middleware('auth');
     }
 
     public function listitem($bulan, $tahun)
@@ -88,13 +88,13 @@ class DetailItemController extends Controller
 
         $this->validate($request, [
             'itemno' => 'min:1|required',
-            'periode','year','qty_real'=>'required',
+            'periode','year','stockop'=>'required',
         ]);
 
         $data=ItemStockOpname::where([['periode', $request->periode],['year', $request->year],['itemno', $request->itemno]])->update([
-            'stockop'    => $request->qty_real,
+            'stockop'    => $request->stockop,
             'desc'       => $request->desc,
-            'post_by'    => Auth::user()->id,
+            // 'post_by'    => Auth::user()->id,
             'updated_at' => Carbon::now()
         ]);
 
