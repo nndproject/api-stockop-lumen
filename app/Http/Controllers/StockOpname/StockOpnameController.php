@@ -141,7 +141,7 @@ class StockOpnameController extends Controller
             $tmp['itemno']          = $item->itemno;
             $tmp['itemdesc']        = $item->itemdesc;
             $tmp['location']        = $item->warehouse;
-            $tmp['status']          = ($item->qty == $item->stockop) ? true : false;
+            $tmp['status']          = fdatastatus($data);
             $tmp['message']         = "Data Item ".$item->itemno." - ".$item->itemdesc." telah berhasil diperbarui oleh ".$item->users->name;
             $tmp['updated_at']      = Carbon::parse($item->updated_at)->diffForHumans(); 
 

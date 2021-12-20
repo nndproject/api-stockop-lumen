@@ -7,6 +7,8 @@ use Illuminate\Http\Request;
 
 use Carbon\Carbon;
 use App\Models\ItemStockOpname;
+use App\Models\StockOpname;
+use App\Models\FilesStockOpname;
 use Illuminate\Support\Facades\DB;
 use Auth;
 class DetailItemController extends Controller
@@ -47,22 +49,24 @@ class DetailItemController extends Controller
 
     public function detailitem($bulan, $tahun, $itemno)
     {
-        $data=ItemStockOpname::where([['periode',$bulan], ['year',$tahun], ['itemno',$itemno]])
-        ->select(
-            'itemno',
-            'itemdesc',
-            'unit',
-            'qty',
-            'id_wh',
-            'warehouse',
-            'stockop',
-            'desc',
-            )->first();
+        $data=ItemStockOpname::where([['periode',$bulan], ['year',$tahun], ['itemno',$itemno]])->first();
         if($data){
             return response()->json([
                 'success' => true,
                 'message' =>'Detail Data Item',
-                'data'    => $data
+                'data'    => array([
+                    'itemno'          => $data->itemno,
+                    'itemdesc'        => $data->itemdesc,
+                    'qty'             => $data->qty,
+                    'unit'            => $data->unit,
+                    'stockop'         => $data->stockop,
+                    'location'        => $data->warehouse,
+                    'status'          => fdatastatus($data),
+                    'message'         => $data->desc,
+                    'updated_at'      => Carbon::parse($data->updated_at)->format('Y-m-d H:i'),
+                    'posted_by'       => ($data->users) ? $data->users->name : null,
+
+                ])
             ], 200);
         }else{
             return response()->json([
@@ -75,28 +79,35 @@ class DetailItemController extends Controller
 
     public function updatestockitem(Request $request)
     {
-        /* ItemStockOpname::where([['periode', $request->input('periode')],['year', $request->input('year')],['itemno', $request->input('itemno')]])->update([
-            'stockop'    => $request->input('qty_real'),
-            'desc'       => $request->input('desc'),
-            'post_by'    => Auth::user()->id,
-            'updated_at' => Carbon::now()
-        ]);
-        return response()->json([
-            'success' => true,
-            'message' =>'Berhasil memperbarui data item ini',
-        ], 202); */
-
         $this->validate($request, [
             'itemno' => 'min:1|required',
             'periode','year','stockop'=>'required',
         ]);
 
-        $data=ItemStockOpname::where([['periode', $request->periode],['year', $request->year],['itemno', $request->itemno]])->update([
+        $stockop    = StockOpname::where([['periode', $request->periode],['year', $request->year]])->first();
+        $data       = ItemStockOpname::where([['periode', $request->periode],['year', $request->year],['itemno', $request->itemno]])->update([
             'stockop'    => $request->stockop,
             'desc'       => $request->desc,
             // 'post_by'    => Auth::user()->id,
             'updated_at' => Carbon::now()
         ]);
+
+        if($request->hasFile('files')){
+
+                // $image = $request->file('files');
+                // $name = time().'.'.$image->getClientOriginalExtension();
+                // $destinationPath = storage_path('/app/images');
+                // $image->move($destinationPath, $name);
+         
+
+            $tempname = saveAndResizeImage($request->file('files'), "stock-opname", $request->year.'/'.strtolower($request->periode), 800, 600 );
+            $files = new FilesStockOpname();
+            $files->itemno      = $request->itemno;
+            $files->id_stockop  = $stockop->id;
+            $files->files       = $tempname;
+            $files->save();
+        }
+
 
         
         if($data){
