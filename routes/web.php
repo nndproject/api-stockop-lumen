@@ -32,6 +32,7 @@ $router->group(['prefix' => 'api'], function () use ($router) {
         $router->get('list-item/{bulan}/{tahun}', '\App\Http\Controllers\StockOpname\DetailItemController@listitem');
         $router->get('detail-item/{bulan}/{tahun}/{itemno}', '\App\Http\Controllers\StockOpname\DetailItemController@detailitem');
         $router->post('item/update', '\App\Http\Controllers\StockOpname\DetailItemController@updatestockitem');
+        $router->post('item/updateimg', '\App\Http\Controllers\StockOpname\DetailItemController@updatestockitemFiles');
 
     });
 

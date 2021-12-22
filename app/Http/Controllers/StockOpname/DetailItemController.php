@@ -11,6 +11,12 @@ use App\Models\StockOpname;
 use App\Models\FilesStockOpname;
 use Illuminate\Support\Facades\DB;
 use Auth;
+
+use Intervention\Image\Facades\Image;
+use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\File;
+
+
 class DetailItemController extends Controller
 {
     public function __construct()
@@ -92,6 +98,13 @@ class DetailItemController extends Controller
             'updated_at' => Carbon::now()
         ]);
 
+        if($request->desc){
+            $png_url = "product-".time().".png";
+            $path = public_path().'/images/' . $png_url;
+            file_put_contents($path, base64_decode($request->img));
+        }
+
+
         if($request->hasFile('files')){
 
                 // $image = $request->file('files');
@@ -111,6 +124,39 @@ class DetailItemController extends Controller
 
         
         if($data){
+            return response()->json([
+                'success' => true,
+                'message' =>'Berhasil memperbarui data item ini',
+            ], 202);
+        }else{
+            return response()->json([
+                'success' => false,
+                'message' =>'Gagal memperbarui data ini',
+            ], 404);
+        }
+    }
+
+    public function updatestockitemFiles(Request $request)
+    {
+    
+
+        if($request->img){
+            // $png_url = "product-".time().".png";
+            // $path = public_path().'/storage/' . $png_url;
+            // file_put_contents($path, base64_decode($request->img));
+        
+
+            $tempname = saveAndResizeImage($request->file('img'), "stock-opname", "2021".'/'.strtolower("May"), 800, 600 );
+            $files = new FilesStockOpname();
+            $files->itemno      = "036000291452";
+            $files->id_stockop  = "28";
+            $files->files       = $tempname;
+            $files->save();
+        }
+
+
+        
+        if($files){
             return response()->json([
                 'success' => true,
                 'message' =>'Berhasil memperbarui data item ini',

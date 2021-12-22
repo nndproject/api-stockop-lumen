@@ -40,7 +40,7 @@ if( !function_exists("saveAndResizeImage") )
 
 if( !function_exists("fdatastatus"))
 {
-    function fdatastatus( $status )
+    function fdatastatus( $data )
     {
         $status = 0;
         if(empty($data->updated_at)){
