@@ -29,10 +29,12 @@ $router->group(['prefix' => 'api'], function () use ($router) {
         $router->get('monitoring/{id}', '\App\Http\Controllers\StockOpname\StockOpnameController@monitoring');
         $router->get('timeline/{id}', '\App\Http\Controllers\StockOpname\StockOpnameController@timeline');
 
+        
+        $router->get('dashboard', '\App\Http\Controllers\StockOpname\StockOpnameController@dashboard');
+
         $router->get('list-item/{bulan}/{tahun}', '\App\Http\Controllers\StockOpname\DetailItemController@listitem');
         $router->get('detail-item/{bulan}/{tahun}/{itemno}', '\App\Http\Controllers\StockOpname\DetailItemController@detailitem');
         $router->post('item/update', '\App\Http\Controllers\StockOpname\DetailItemController@updatestockitem');
-        $router->post('item/updateimg', '\App\Http\Controllers\StockOpname\DetailItemController@updatestockitemFiles');
 
     });
 

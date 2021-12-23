@@ -51,6 +51,7 @@ class UserController extends Controller
 
         // $generateToken = $this->jwt($user);
         $user['token'] = $generateToken;
+        $user['divisi']= "Produksi";
         return response()->json($user, 200);
        /*  return response()->json([
             'success'   => true,

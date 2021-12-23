@@ -12,9 +12,14 @@ use Carbon\Carbon;
 
 class StockOpnameController extends Controller
 {
+    private $periode;
+    private $year;
+
     public function __construct()
     {
-        // $this->middleware('auth');
+        $this->periode = Carbon::now()->subMonth()->format('F');
+        $this->year = Carbon::now()->format('Y');
+        $this->middleware('auth');
     }
     
     public function index()
@@ -35,6 +40,43 @@ class StockOpnameController extends Controller
                 'message' =>'Tidak Ada Data Stock Opname di bulan ini',
                 'data'    => $data
             ], 404);
+        }
+    }
+
+    public function dashboard()
+    {
+        $stockop    = StockOpname::where([['periode', $this->periode],['year', $this->year]])->first();
+        if(isset($stockop)){
+            $jumAll = ItemStockOpname::where([['periode',$stockop->periode],['year',$stockop->year]])->count();
+            $jumAntrian = ItemStockOpname::where([['periode',$stockop->periode],['year',$stockop->year],['stockop', null]])->count();
+            $jumStockAll = ItemStockOpname::where([['periode',$stockop->periode],['year',$stockop->year],['stockop','!=', null]])->count();
+
+            return response()->json([
+                'success'   => true,
+                'message'   => 'Tidak ada data Stock Opname pada periode '.strtoupper($this->periode).' '.$this->year,
+                'data'      => array([
+                        'pengumuman' => 'Stok Opname  PT. Arion Indonesia periode '.strtoupper($this->periode).' '.$this->year
+                                        .' akan dilaksanakan pada tanggal '.Carbon::now()->subMonth()->endOfMonth()->format('d F Y').' mulai pukul 10:00',
+                        'all'       => (float) number_format($jumAll, 0, ',', '.'),
+                        'antrian'   => (float) number_format($jumAntrian, 0, ',', '.'),
+                        'selesai'   => (float) number_format($jumStockAll, 0, ',', '.'),
+                        'progress'  => (float) number_format((($jumStockAll/$jumAll)*100), 2, ',', '.'), 
+                ])
+            ], 200); 
+
+        }else{
+            return response()->json([
+                'success' => true,
+                'message' =>'Tidak ada data Stock Opname pada periode '.strtoupper($this->periode).' '.$this->year,
+                'data'      => array([
+                    'pengumuman' => 'Stok Opname  PT. Arion Indonesia periode '.strtoupper($this->periode).' '.$this->year
+                                    .' akan dilaksanakan pada tanggal '.Carbon::now()->subMonth()->endOfMonth()->format('d F Y').' mulai pukul 10:00',
+                    'all'       => 0,
+                    'antrian'   => 0,
+                    'selesai'   => 0,
+                    'progress'  => 0, 
+                ])
+            ], 200); 
         }
     }
 

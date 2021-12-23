@@ -19,8 +19,13 @@ use Illuminate\Support\Facades\File;
 
 class DetailItemController extends Controller
 {
+    private $periode;
+    private $year;
+
     public function __construct()
     {
+        $this->periode = Carbon::now()->submonth()->format('F');
+        $this->year = Carbon::now()->format('Y');
         // $this->middleware('auth');
     }
 
@@ -87,41 +92,30 @@ class DetailItemController extends Controller
     {
         $this->validate($request, [
             'itemno' => 'min:1|required',
-            'periode','year','stockop'=>'required',
+            'stockop'=>'required',
         ]);
 
-        $stockop    = StockOpname::where([['periode', $request->periode],['year', $request->year]])->first();
-        $data       = ItemStockOpname::where([['periode', $request->periode],['year', $request->year],['itemno', $request->itemno]])->update([
-            'stockop'    => $request->stockop,
-            'desc'       => $request->desc,
-            // 'post_by'    => Auth::user()->id,
-            'updated_at' => Carbon::now()
-        ]);
-
-        if($request->desc){
-            $png_url = "product-".time().".png";
-            $path = public_path().'/images/' . $png_url;
-            file_put_contents($path, base64_decode($request->img));
+        $stockop    = StockOpname::where([['periode', "May"],['year', $this->year]])->first();
+        if($stockop)
+        {
+            $data       = ItemStockOpname::where([['periode', "May"],['year', $this->year],['itemno', $request->itemno]])->update([
+                'stockop'    => $request->stockop,
+                'desc'       => ($request->desc) ?? "-",
+                // 'post_by'    => Auth::user()->id,
+                'updated_at' => Carbon::now()
+            ]);
+    
+            if($request->hasFile('img')){
+    
+                $tempname = saveAndResizeImage($request->file('img'), "stock-opname", $this->year.'/'.strtolower("May"), 800, 600 );
+                $files = new FilesStockOpname();
+                $files->itemno      = $request->itemno;
+                $files->id_stockop  = $stockop->id;
+                $files->files       = $tempname;
+                $files->save();
+            }
         }
-
-
-        if($request->hasFile('files')){
-
-                // $image = $request->file('files');
-                // $name = time().'.'.$image->getClientOriginalExtension();
-                // $destinationPath = storage_path('/app/images');
-                // $image->move($destinationPath, $name);
-         
-
-            $tempname = saveAndResizeImage($request->file('files'), "stock-opname", $request->year.'/'.strtolower($request->periode), 800, 600 );
-            $files = new FilesStockOpname();
-            $files->itemno      = $request->itemno;
-            $files->id_stockop  = $stockop->id;
-            $files->files       = $tempname;
-            $files->save();
-        }
-
-
+        
         
         if($data){
             return response()->json([
@@ -136,37 +130,5 @@ class DetailItemController extends Controller
         }
     }
 
-    public function updatestockitemFiles(Request $request)
-    {
-    
-
-        if($request->img){
-            // $png_url = "product-".time().".png";
-            // $path = public_path().'/storage/' . $png_url;
-            // file_put_contents($path, base64_decode($request->img));
-        
-
-            $tempname = saveAndResizeImage($request->file('img'), "stock-opname", "2021".'/'.strtolower("May"), 800, 600 );
-            $files = new FilesStockOpname();
-            $files->itemno      = "036000291452";
-            $files->id_stockop  = "28";
-            $files->files       = $tempname;
-            $files->save();
-        }
-
-
-        
-        if($files){
-            return response()->json([
-                'success' => true,
-                'message' =>'Berhasil memperbarui data item ini',
-            ], 202);
-        }else{
-            return response()->json([
-                'success' => false,
-                'message' =>'Gagal memperbarui data ini',
-            ], 404);
-        }
-    }
 
 }
