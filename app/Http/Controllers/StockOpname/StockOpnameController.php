@@ -17,9 +17,9 @@ class StockOpnameController extends Controller
 
     public function __construct()
     {
-        $this->periode = Carbon::now()->subMonth()->format('F');
-        $this->year = Carbon::now()->format('Y');
-        $this->middleware('auth');
+        $this->periode = Carbon::now()->submonths(2)->format('F');
+        $this->year = Carbon::now()->subyear()->format('Y');
+        // $this->middleware('auth');
     }
     
     public function index()

@@ -24,8 +24,8 @@ class DetailItemController extends Controller
 
     public function __construct()
     {
-        $this->periode = Carbon::now()->submonth()->format('F');
-        $this->year = Carbon::now()->format('Y');
+        $this->periode = Carbon::now()->submonths(2)->format('F');
+        $this->year = Carbon::now()->subyear()->format('Y');
         // $this->middleware('auth');
     }
 
@@ -58,9 +58,9 @@ class DetailItemController extends Controller
         }
     }
 
-    public function detailitem($bulan, $tahun, $itemno)
+    public function detailitem($itemno)
     {
-        $data=ItemStockOpname::where([['periode',$bulan], ['year',$tahun], ['itemno',$itemno]])->first();
+        $data=ItemStockOpname::where([['periode',$this->periode], ['year',$this->year], ['itemno',$itemno]])->first();
         if($data){
             return response()->json([
                 'success' => true,
@@ -95,10 +95,10 @@ class DetailItemController extends Controller
             'stockop'=>'required',
         ]);
 
-        $stockop    = StockOpname::where([['periode', "May"],['year', $this->year]])->first();
+        $stockop    = StockOpname::where([['periode', $this->periode],['year', $this->year]])->first();
         if($stockop)
         {
-            $data       = ItemStockOpname::where([['periode', "May"],['year', $this->year],['itemno', $request->itemno]])->update([
+            $data       = ItemStockOpname::where([['periode', $this->periode],['year', $this->year],['itemno', $request->itemno]])->update([
                 'stockop'    => $request->stockop,
                 'desc'       => ($request->desc) ?? "-",
                 // 'post_by'    => Auth::user()->id,
@@ -107,7 +107,7 @@ class DetailItemController extends Controller
     
             if($request->hasFile('img')){
     
-                $tempname = saveAndResizeImage($request->file('img'), "stock-opname", $this->year.'/'.strtolower("May"), 800, 600 );
+                $tempname = saveAndResizeImage($request->file('img'), "stock-opname", $this->year.'/'.strtolower($this->periode), 800, 600 );
                 $files = new FilesStockOpname();
                 $files->itemno      = $request->itemno;
                 $files->id_stockop  = $stockop->id;
