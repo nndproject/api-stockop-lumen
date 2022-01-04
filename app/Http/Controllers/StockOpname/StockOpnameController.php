@@ -174,7 +174,7 @@ class StockOpnameController extends Controller
     
     public function timeline($id)
     {
-        $data = StockOpname::findOrFail($id);
+        $data = StockOpname::where([['periode',$this->periode],['year',$this->year]])->first();
         $dataTimeline = ItemStockOpname::with('users:id,name')->where([['periode',$data->periode],['year',$data->year],['stockop','!=', null]])->orderBy('updated_at','DESC')->limit(20)->get();
 
         $result = array();
