@@ -179,12 +179,13 @@ class StockOpnameController extends Controller
 
         $result = array();
         foreach ($dataTimeline as $item) {
+            $userpostby = ($item->users) ? $item->users->name : 'System';
             $tmp=array();
             $tmp['itemno']          = $item->itemno;
             $tmp['itemdesc']        = $item->itemdesc;
             $tmp['location']        = $item->warehouse;
             $tmp['status']          = fdatastatus($data);
-            $tmp['message']         = "Data Item ".$item->itemno." - ".$item->itemdesc." telah berhasil diperbarui oleh ".$item->users->name;
+            $tmp['message']         = "Data Item ".$item->itemno." - ".$item->itemdesc." telah berhasil diperbarui oleh ".$userpostby;
             $tmp['updated_at']      = Carbon::parse($item->updated_at)->diffForHumans(); 
 
             array_push($result, $tmp);
