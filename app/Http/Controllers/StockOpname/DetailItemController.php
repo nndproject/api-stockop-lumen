@@ -102,6 +102,7 @@ class DetailItemController extends Controller
                 'stockop'    => $request->stockop,
                 'desc'       => ($request->desc) ?? "-",
                 // 'post_by'    => Auth::user()->id,
+                'post_by'    => 6,
                 'updated_at' => Carbon::now()
             ]);
     

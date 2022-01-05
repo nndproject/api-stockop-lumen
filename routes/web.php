@@ -27,7 +27,7 @@ $router->group(['prefix' => 'api'], function () use ($router) {
     $router->group(['prefix' => 'stock-opname'], function () use ($router) {
         $router->get('/', '\App\Http\Controllers\StockOpname\StockOpnameController@index');
         $router->get('monitoring/{id}', '\App\Http\Controllers\StockOpname\StockOpnameController@monitoring');
-        $router->get('timeline/{id}', '\App\Http\Controllers\StockOpname\StockOpnameController@timeline');
+        $router->get('timeline', '\App\Http\Controllers\StockOpname\StockOpnameController@timeline');
 
         
         $router->get('dashboard', '\App\Http\Controllers\StockOpname\StockOpnameController@dashboard');
